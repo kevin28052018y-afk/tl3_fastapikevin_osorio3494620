@@ -1,4 +1,8 @@
-FROM python:3.10-slim
+<<<<<<< HEAD
+FROM python:3.11-slim
+=======
+FROM python:3.11-slim
+>>>>>>> 2c83444a3b1560d3b174cb200c57ef28c3e4e8bd
 
 WORKDIR /app
 
@@ -7,9 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# ENTRENA Y GENERA EL ARTEFACTO EN BUILD
-RUN python train.py
+EXPOSE 8080
 
-EXPOSE 8000
-
-CMD ["uvicorn", "main:app","--host", "0.0.0.0", "--port","8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+>>>>>>> 2c83444a3b1560d3b174cb200c57ef28c3e4e8bd

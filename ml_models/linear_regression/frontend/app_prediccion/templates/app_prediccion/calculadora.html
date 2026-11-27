@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculadora del valor de una vivienda">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <title>Calculadora de vivienda</title>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<main class="flex-grow-1 d-flex align-items-center">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-5">
+                <div class="card border-0 shadow p-4">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-house-door-fill text-primary display-4"></i>
+                        <h1 class="h3 fw-bold mt-2">Calcula el valor de tu vivienda</h1>
+                    </div>
+
+                    <!-- Sin lógica: se conectará con la API -->
+                    <div class="mb-3">
+                        <label for="metros" class="form-label fw-semibold">Metros cuadrados (m²)</label>
+                        <input type="number" id="metros" class="form-control form-control-lg" placeholder="Ej: 65" min="1" step="any">
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="button" id="btnCalcular" class="btn btn-primary btn-lg">
+                            <i class="bi bi-calculator me-2"></i>Calcular
+                        </button>
+                    </div>
+
+                    <!-- Aquí se mostrará la respuesta de la API (quita d-none al usarlo) -->
+                    <div id="resultado" class="alert alert-success text-center mt-4 mb-0 d-none" role="alert">
+                        <p class="mb-1 small">Valor estimado de la vivienda</p>
+                        <p id="valor" class="h3 fw-bold mb-0"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+        <p class="mb-0 small">Kevin Alejandro Osorio Parra &middot; Estudiante de una tecnología en Análisis y Desarrollo de Software &middot; Ficha 3494620</p>
+    </div>
+</footer>
+
+<script>
+    // Dirección de tu API FastAPI (uvicorn usa el puerto 8000 por defecto)
+    const URL_API = 'http://127.0.0.1:8000/predict';
+
+    document.getElementById('btnCalcular').addEventListener('click', async () => {
+        const area = parseFloat(document.getElementById('metros').value);
+        const resultado = document.getElementById('resultado');
+
+        if (isNaN(area) || area <= 0) {
+            alert('Ingresa un número de metros mayor que cero.');
+            return;
+        }
+
+        try {
+            const respuesta = await fetch(URL_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ area: area })
+            });
+
+            if (!respuesta.ok) throw new Error('Error ' + respuesta.status);
+
+            const datos = await respuesta.json();
+
+            document.getElementById('valor').textContent =
+                new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 })
+                    .format(datos.precio);
+            resultado.classList.remove('d-none');
+        } catch (error) {
+            alert('No se pudo conectar con la API: ' + error.message);
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 FROM python:3.11-slim
-=======
-FROM python:3.11-slim
->>>>>>> 2c83444a3b1560d3b174cb200c57ef28c3e4e8bd
 
 WORKDIR /app
 
@@ -11,7 +7,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# Genera el modelo en el build
+RUN mkdir -p model && python train.py
+
 EXPOSE 8080
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
->>>>>>> 2c83444a3b1560d3b174cb200c57ef28c3e4e8bd
+# Usa el puerto que Railway asigna; en local, 8080
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}"]

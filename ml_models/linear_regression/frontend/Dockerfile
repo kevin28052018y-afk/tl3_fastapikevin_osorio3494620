@@ -9,4 +9,4 @@ COPY . .
 
 # El backend (FastAPI) usa el puerto 8000, por eso Django corre en el 8001
 
-CMD gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:8001}
+CMD ["sh", "-c", "gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8001}"]
